@@ -3,14 +3,14 @@ from my_settings    import DATABASES, SECRET_KEY
 
 import pymysql
 
+pymysql.install_as_MySQLdb()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = SECRET_KEY
 DATABASES = DATABASES
 
 APPEND_SLASH = False
-
-pymysql.install_as_MySQLdb()
 
 DEBUG = True
 
@@ -84,13 +84,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
