@@ -1,7 +1,6 @@
 import requests, jwt
 
 from django.http.response import JsonResponse
-from django.conf          import settings
 from django.views         import View
 
 from my_settings       import SECRET_KEY, ALGORITHM
