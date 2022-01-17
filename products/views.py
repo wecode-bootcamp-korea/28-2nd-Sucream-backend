@@ -11,7 +11,6 @@ class ProductListView(View):
         sizes    = request.GET.get('size', None)
         order    = request.GET.get('order', 'recent')
         is_buyer = request.GET.get('is_buyer', 1)
-        is_buyer = bool(int(is_buyer))
 
         filtering = Q()
 
