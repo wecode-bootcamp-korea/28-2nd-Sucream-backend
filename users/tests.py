@@ -14,6 +14,7 @@ class UserTest(TestCase):
             email    = '123456789@gmail.com',
             point    = 10000000
         )
+
     def tearDown(self):
         User.objects.all().delete()
 

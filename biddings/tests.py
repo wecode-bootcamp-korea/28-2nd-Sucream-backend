@@ -1,6 +1,6 @@
 import json, jwt
 
-from django.test     import TestCase, Client
+from django.test import TestCase, Client
 
 from biddings.models import Bidding
 from products.models import Product, ProductSize, Size, Brand
@@ -97,95 +97,161 @@ class BiddingUnitTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"message" : "PRODUCT_DOES_NOT_EXIST"})
 
-class NewBiddingViewUnitTest(TestCase):
+# class NewBiddingViewUnitTest(TestCase):
+#     def setUp(self):
+#         User.objects.create(
+#             id       = 1,
+#             kakao_id = 1
+#         )
+#         Size.objects.create(
+#             id   = 1,
+#             name = '230'
+#         )
+#         Brand.objects.create(
+#             id   = 1,
+#             name = "Nike"
+#         )
+#         Product.objects.create(
+#             id            = 1,
+#             name          = "Nike Dunk Low Retro Black",
+#             korean_name   = "나이키 덩크 로우 레트로 블랙",
+#             model_number  = "DD1391-100",
+#             color         = "WHITE/BLACK",
+#             release_at    = "2021-01-14",
+#             retail_price  = 129000,
+#             thumbnail_url = 'https://testimgurl.com',
+#             brand_id      = 1
+#         )
+#         ProductSize.objects.create(
+#             id         = 1,
+#             product_id = 1,
+#             size_id    = 1
+#         )
+
+#     def tearDown(self):
+#         User.objects.all().delete()
+#         Size.objects.all().delete()
+#         Brand.objects.all().delete()
+#         Product.objects.all().delete()
+#         ProductSize.objects.all().delete()
+
+#     def test_newbiddingview_post_filtering(self):
+#         client = Client()
+
+#         access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
+#         headers           = {'HTTP_AUTHORIZATION': access_token}
+
+#         data = {
+#             'is_buyer'      : False,
+#             'offered_price' : 11111,
+#             'id'            : 1,
+#             'size'          : 'wrong'
+#         }
+#         response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
+
+#         self.assertEqual(response.status_code, 204)
+
+#     def test_newbiddingview_post_success(self):
+#         client = Client()
+
+#         access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
+#         headers           = {'HTTP_AUTHORIZATION': access_token}
+
+#         data = {
+#             'user'          : 1,
+#             'is_buyer'      : 0,
+#             'offered_price' : 11111,
+#             'id'            : 1,
+#             'size'          : '260'
+#         }
+#         response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
+
+#         self.assertEqual(response.status_code, 201)
+#         self.assertEqual(response.json(), {'message' : 'OFFER_SUCCESS'})
+
+#     def test_newbiddingview_post_keyerror(self):
+#         client = Client()
+
+#         access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
+#         headers           = {'HTTP_AUTHORIZATION': access_token}
+
+#         data = {
+#             'is_buyer'      : False,
+#             'offered_price' : 11111,
+#             'wrong_id'      : 1,
+#             'size'          : '260'
+#         }
+#         response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
+
+#         self.assertEqual(response.status_code, 400)
+#         self.assertEqual(response.json(), {'message': 'KEY_ERROR'})
+
+class OrderViewUnitTest(TestCase):
     def setUp(self):
         User.objects.create(
-            id = 1,
-            kakao_id = 1
+            id       = 1,
+            kakao_id = 1234,
+            email    = "gusrn015@gmail.com"
         )
-
+        User.objects.create(
+            id       = 2,
+            kakao_id = 1235,
+            email    = "wvlolvw@naver.com"
+        )
+        Size.objects.create(
+            id   = 1,
+            name = "230"
+        )
         Brand.objects.create(
             id   = 1,
             name = "Nike"
         )
-
-        Size.objects.create(
-            id   = 1,
-            name = '260'
-        )
-
         Product.objects.create(
             id            = 1,
-            name          = "Nike Dunk Low Retro Black",
-            korean_name   = "나이키 덩크 로우 레트로 블랙",
+            name          = "Nike Dunk Black",
+            korean_name   = "나이키 덩크 블랙",
             model_number  = "DD1391-100",
             color         = "WHITE/BLACK",
             release_at    = "2021-01-14",
-            retail_price  = 129000,
-            thumbnail_url = 'https://testimgurl.com',
-            brand_id      = 1
+            retail_price  = "129000",
+            thumbnail_url = "url",
+            brand_id      = 1,
         )
-
         ProductSize.objects.create(
             id         = 1,
             product_id = 1,
             size_id    = 1
         )
+        Bidding.objects.create(
+            id                = 1,
+            price             = 1000,
+            is_buyer          = True,
+            user_id           = 1,
+            products_sizes_id = 1
+        )
 
     def tearDown(self):
         User.objects.all().delete()
-        Product.objects.all().delete()
-        Brand.objects.all().delete()
         Size.objects.all().delete()
+        Brand.objects.all().delete()
+        Product.objects.all().delete()
         ProductSize.objects.all().delete()
+        Bidding.objects.all().delete()
 
-    def test_newbiddingview_post_filtering(self):
+    def test_order_post_success(self):
         client = Client()
+        
+        access_token = jwt.encode({'id' : 1}, SECRET_KEY, ALGORITHM)
+        headers      = {'Authorization': access_token}
 
-        access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
-        headers           = {'HTTP_AUTHORIZATION': access_token}
-
-        data = {
-            'is_buyer'      : False,
-            'offered_price' : 11111,
-            'id'            : 1,
-            'size'          : 'wrong'
+        body = {
+            'product'  : 1,
+            'size'     : '230',
+            'price'    : 1000,
+            'is_buyer' : False,
         }
-        response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
 
-        self.assertEqual(response.status_code, 204)
+        response = client.post('/biddings/order', json.dumps(body), content_type = 'application/json', **headers)
 
-    def test_newbiddingview_post_success(self):
-        client = Client()
-
-        access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
-        headers           = {'HTTP_AUTHORIZATION': access_token}
-
-        data = {
-            'user'          : 1,
-            'is_buyer'      : 0,
-            'offered_price' : 11111,
-            'id'            : 1,
-            'size'          : '260'
-        }
-        response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), {'message' : 'OFFER_SUCCESS'})
-
-    def test_newbiddingview_post_keyerror(self):
-        client = Client()
-
-        access_token      = jwt.encode({'user_id':1}, SECRET_KEY, ALGORITHM)
-        headers           = {'HTTP_AUTHORIZATION': access_token}
-
-        data = {
-            'is_buyer'      : False,
-            'offered_price' : 11111,
-            'wrong_id'      : 1,
-            'size'          : '260'
-        }
-        response = client.post('/biddings/bidding', json.dumps(data), content_type = 'application/json', **headers)
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'message': 'KEY_ERROR'})
+        # self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {"message" : "success"})
