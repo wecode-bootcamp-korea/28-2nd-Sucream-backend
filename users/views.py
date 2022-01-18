@@ -5,6 +5,7 @@ from django.views         import View
 
 from my_settings       import SECRET_KEY, ALGORITHM
 from users.models      import User
+from cores.utils       import login_decorator
 
 class KakaoLoginView(View):
     def get(self, request):
@@ -26,3 +27,11 @@ class KakaoLoginView(View):
 
         except KeyError:
             return JsonResponse({'message': 'AUTHORIZATION_KEY_ERROR'}, status=400)
+
+class UserPointView(View):
+    @login_decorator
+    def get(self, request):
+        user  = request.user
+        point = int(user.point)
+
+        return JsonResponse({"result" : point}, status=200)
