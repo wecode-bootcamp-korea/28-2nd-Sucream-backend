@@ -1,6 +1,6 @@
 import json, requests, jwt
 
-from django.test   import TransactionTestCase, TestCase, Client
+from django.test   import TestCase, Client
 from unittest.mock import patch, MagicMock
 
 from .models     import User
@@ -14,8 +14,8 @@ class UserTest(TestCase):
             email    = '123456789@gmail.com',
             point    = 10000000
         )
-        def tearDown(self):
-            User.objects.all().delete()
+    def tearDown(self):
+        User.objects.all().delete()
 
     @patch("users.views.requests")
     def test_kakaologinview_get_success(self, mocked_requests):

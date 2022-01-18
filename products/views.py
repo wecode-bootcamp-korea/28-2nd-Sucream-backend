@@ -5,6 +5,7 @@ from django.views     import View
 from django.db.models import Q, Min, Max
 
 from products.models import Product, Brand, Size, Image
+from biddings.models import Bidding, Order
 
 class ProductListView(View):
     def get(self, request):
@@ -101,3 +102,18 @@ class ProductDetailView(View):
             'is_like'        : False
         }
         return JsonResponse({'result' : result}, status = 200)
+
+class ProductDetailGraphView(View):
+    def get(self, request, product_id):
+        try:
+
+            result = [{
+                'id'         : order.id,
+                'size'       : order.products_sizes.size.name,
+                'price'      : int(order.price),
+                'created_at' : order.created_at.strftime('%Y/%m/%d')
+            } for order in Order.objects.filter(products_sizes__product_id=product_id).order_by('-created_at')]
+
+            return JsonResponse({'result' : result}, status = 200)
+        except Order.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_ORDER'}, status=401)
