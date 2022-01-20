@@ -111,6 +111,6 @@ class ProductDetailGraphView(View):
             } for order in Order.objects.filter(products_sizes__product_id=product_id).order_by('-created_at')]
 
             return JsonResponse({'result' : result}, status = 200)
-            
+
         except Order.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_ORDER'}, status=401)
